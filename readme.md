@@ -52,6 +52,8 @@ El proyecto se encuentra estrictamente modularizado para garantizar el desacopla
 ├── app.py                  # Punto de entrada principal (Orquestador de Streamlit)
 ├── requirements.txt        # Dependencias y librerías del sistema
 └── README.md               # Documentación oficial del proyecto
+```
+
 ⚡ Rendimiento, Concurrencia y Escalabilidad
 Concurrencia con SQLite WAL (Write-Ahead Logging):
 
