@@ -9,7 +9,7 @@ from ui.reports import render_reports_view
 from ui.alerts import render_alerts_view
 
 # Configuración de página
-st.set_page_config(page_title="Gestor de Inventario Enterprise", layout="wide")
+st.set_page_config(page_title="Gestor de Inventario Enterprise", page_icon="material/inventory" , layout="wide")
 
 # Inicialización única de servicios y base de datos
 if "inv_service" not in st.session_state:

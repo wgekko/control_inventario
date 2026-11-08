@@ -8,7 +8,7 @@ def render_alerts_view(df_audit: pd.DataFrame, df_rejected: pd.DataFrame):
     col1, col2 = st.columns(2)
 
     with col1:
-        st.write("#### 🔍 Salidas Inusualmente Grandes (Anomalías)")
+        st.write("#### :material/filter_alt: Salidas Inusualmente Grandes (Anomalías)")
         anomalies = AnalyticsService.find_anomalies(df_audit)
         if not anomalies.empty:
             st.dataframe(anomalies, width='stretch')
