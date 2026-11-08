@@ -1,0 +1,55 @@
+import pandas as pd
+import numpy as np
+import lightgbm as lgb
+
+class MLForecaster:
+    @staticmethod
+    def forecast_with_lightgbm(df_audit: pd.DataFrame, days_to_forecast: int = 30) -> pd.DataFrame:
+        """Entrena un modelo tabular ligero con LightGBM por producto basado en características históricas."""
+        cols = ["Producto", "Demanda ML Estimada (30 días)"]
+        
+        if df_audit is None or df_audit.empty:
+            return pd.DataFrame(columns=cols)
+
+        salidas = df_audit[df_audit["delta"] < 0].copy()
+        if salidas.empty or len(salidas) < 10:
+            # Fallback si hay pocos datos históricos para ML
+            return pd.DataFrame(columns=cols)
+
+        salidas["timestamp"] = pd.to_datetime(salidas["timestamp"])
+        salidas["qty"] = salidas["delta"].abs()
+        
+        # Agrupar por producto y fecha diaria
+        daily = salidas.groupby(["product_id", pd.Grouper(key="timestamp", freq="D")])["qty"].sum().reset_index()
+        
+        predictions = []
+        for prod, group in daily.groupby("product_id"):
+            if len(group) < 5:
+                # Si hay muy pocos puntos, usamos la media multiplicada
+                avg_val = group["qty"].mean() * days_to_forecast
+                predictions.append({"Producto": prod, "Demanda ML Estimada (30 días)": round(avg_val, 0)})
+                continue
+
+            group = group.sort_values("timestamp")
+            group["dayofweek"] = group["timestamp"].dt.dayofweek
+            group["month"] = group["timestamp"].dt.month
+            group["lag_1"] = group["qty"].shift(1).fillna(group["qty"].mean())
+            
+            X = group[["dayofweek", "month", "lag_1"]]
+            y = group["qty"]
+
+            try:
+                model = lgb.LGBMRegressor(n_estimators=50, learning_rate=0.1, verbose=-1)
+                model.fit(X, y)
+
+                # Predecir promedio diario para los próximos días y extrapolar
+                last_row = X.iloc[-1:].copy()
+                pred_daily = model.predict(last_row)[0]
+                pred_monthly = max(0.0, pred_daily * days_to_forecast)
+                
+                predictions.append({"Producto": prod, "Demanda ML Estimada (30 días)": round(pred_monthly, 0)})
+            except Exception:
+                avg_val = group["qty"].mean() * days_to_forecast
+                predictions.append({"Producto": prod, "Demanda ML Estimada (30 días)": round(avg_val, 0)})
+
+        return pd.DataFrame(predictions)
