@@ -74,7 +74,8 @@ Instalación y Configuración
 1. Clonar el repositorio
 Bash
 
-git clone 
+git clone : 
+repo de github : (https://github.com/wgekko/control_inventario.git)
 
 cd control_inventario
 
@@ -105,5 +106,5 @@ Bash
 streamlit run app.py
 
 
-video demo 
+video demo breve e introductorio
 
