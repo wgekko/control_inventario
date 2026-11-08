@@ -109,6 +109,9 @@ streamlit run app.py
 video demo breve e introductorio
 
 
-https://github.com/user-attachments/assets/5feaba1f-2b35-4267-93cd-2739d8257bfb
+
+https://github.com/user-attachments/assets/7daddc43-fcba-47e1-b347-d02a237ab00c
+
+
 
 
